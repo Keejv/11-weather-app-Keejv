@@ -7,16 +7,26 @@ class Form extends Component {
       weather: [],
       latitude:0,
       longitude:0,
-      posWeather:{}
+      posWeather:{},
+      selectedOption: "Celcius",
+      newTemp: "",
+      isToggleOn: true
+
     }
   }
 
+  handleOptionChange() {
+    this.setState(prevState => ({
+      isToggleOn: !prevState.isToggleOn
+    }));
+  }
+//F = 9/5 (K - 273) + 32
   onSubmit(e) {
     e.preventDefault();
 
     const cityname = e.nativeEvent.target.elements[0].value;
     
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityname}&APPID=7254d050ae7bb47c60b4718eac4b2132
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityname}&APPID=7254d050ae7bb47c60b4718eac4b2132&units=metric
     `)
       .then(res => res.json())
       .then(res => {
@@ -26,12 +36,13 @@ class Form extends Component {
           wind: res.wind,
           main: res.main,
           sys: res.sys
+
         }, function() {
           console.log('Hopefully we have some weather', this.state);
         })
       });
       if((this.state.longitude && this.state.latitude) !==0){
-        fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${this.state.latitude}&lon=${this.state.longitude}&APPID=5434f1c129e1ac657b10a23c1ac6a1e9`)
+        fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${this.state.latitude}&lon=${this.state.longitude}&APPID=5434f1c129e1ac657b10a23c1ac6a1e9&units=metric`)
                 .then(res => res.json())
                 .then(res => {
                     this.setState({
@@ -48,15 +59,20 @@ class Form extends Component {
         <form onSubmit={this.onSubmit.bind(this)}>
           <input type="text" placeholder="Type the city name here" name="city" />
           <button type="submit">Get weather</button>
-          <button onClick={this.degree} type="submit">Knapp</button>
+
+          
         </form>
+        <div className="form-group ">
+                <button onClick={this.handleOptionChange.bind(this)} type="submit">{this.state.isToggleOn ? 'Fahrenheit' : 'Celcius'}</button>
+          </div>
         { this.state.weather.length > 0 ? 
           <div className="App-weather">
             <img src={`http://openweathermap.org/img/w/${this.state.weather[0].icon}.png`} title="Title goes here" alt="A weather icon, describing the... weather" />
             <p>
               {this.state.weather[0].description}
               <br />
-             temp? {this.state.main.temp}
+             temp {this.state.isToggleOn ? this.state.main.temp : ((this.state.main.temp * 9 / 5) + 32).toFixed(2)}
+             { this.state.isToggleOn ? <span> &deg;C</span> : <span> &deg;F</span> }
               <br />
               Wind direction {this.state.wind.deg}
               <br />
@@ -66,11 +82,11 @@ class Form extends Component {
               <br />
               Sunset: {this.calculateTime(this.state.sys.sunset)}
               <br />
-
             </p>
           </div>
           : <p>No results yet</p>
         }
+
         {this.state.posWeather ?(
           <div className="App-weather">
           <p>
