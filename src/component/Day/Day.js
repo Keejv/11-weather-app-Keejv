@@ -7,6 +7,7 @@ class Day extends Component {
         console.log(this.props.forecastInterval);   
     }
 
+
     render () {
         return(
             <div className="card">

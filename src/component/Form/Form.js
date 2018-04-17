@@ -29,6 +29,7 @@ class Form extends Component {
     }
     this.success = this.success.bind(this);
     this.error = this.error.bind(this);
+    this.handleOptionChange = this.handleOptionChange.bind(this)
   }
 
   componentDidMount(){
@@ -108,15 +109,18 @@ class Form extends Component {
         </form>
           
         <div className="form-group ">
-                <button onClick={this.handleOptionChange.bind(this)} type="submit">{this.state.isToggleOn ? 'Fahrenheit' : 'Celcius'}</button>
-          </div>
+            <button onClick={this.handleOptionChange} type="submit">{this.state.isToggleOn ? 'Fahrenheit' : 'Celcius'}</button>
+        </div>
           {this.state.posWeather ?(
             <div className="App-weather">
             <ul>
             <p>
             <li><strong>My Location: </strong>{this.state.posWeather.name}</li>
 
-            <li><strong>Temperature: </strong>{this.state.posWeather.main.temp} &deg;C</li>
+            <li>
+              <strong>Temperature: </strong>{this.state.isToggleOn ? this.state.posWeather.main.temp : ((this.state.posWeather.main.temp * 9 / 5) + 32).toFixed(2)}
+              {this.state.isToggleOn ? <p>&deg;C</p> : <p>&deg;F</p> }
+            </li>
             <li><strong>Windspeed: </strong>{this.state.posWeather.wind.speed} m/s</li>
             <li><strong>Humidity: </strong>{this.state.posWeather.main.humidity} %</li>
             <li><strong>Sunrise: </strong>{this.calculateTime(this.state.posWeather.sys.sunrise)}</li>
